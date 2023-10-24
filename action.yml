@@ -16,8 +16,8 @@ inputs:
     default: "prefix"
 
 outputs:
-  time:
-    description: "Your output description here"
+  didUpdateTitle:
+    description: "boolean indicating whether or not the title was updated"
 
 runs:
   using: node18
