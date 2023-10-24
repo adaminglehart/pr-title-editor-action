@@ -60,7 +60,7 @@ async function run() {
       core.setFailed("missing pull request");
     }
 
-    const octokit = new Octokit({ token: inputs.token });
+    const octokit = new Octokit({ auth: inputs.token });
 
     const response = await octokit.rest.pulls.update({
       owner: github.context.repo.owner,

@@ -70,7 +70,16 @@ function run() {
             if (!updateTitle) {
                 return;
             }
-            const octokit = new octokit_1.Octokit({ token: inputs.token });
+            if (!github.context.repo.repo) {
+                core.setFailed("missing repo name");
+            }
+            if (!github.context.repo.owner) {
+                core.setFailed("missing repo owner");
+            }
+            if (!pullRequest) {
+                core.setFailed("missing pull request");
+            }
+            const octokit = new octokit_1.Octokit({ auth: inputs.token });
             const response = yield octokit.rest.pulls.update({
                 owner: github.context.repo.owner,
                 repo: github.context.repo.repo,
