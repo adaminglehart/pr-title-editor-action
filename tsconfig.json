@@ -5,7 +5,7 @@
     "preserveConstEnums": true,
     "strictNullChecks": true,
     "allowJs": true,
-    "target": "ES2021",
+    "target": "es2015",
     "outDir": "./dist",
     "moduleResolution": "node",
     "module": "commonjs",

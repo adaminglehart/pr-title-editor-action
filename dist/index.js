@@ -42566,6 +42566,15 @@ try {
 
 "use strict";
 
+var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, generator) {
+    function adopt(value) { return value instanceof P ? value : new P(function (resolve) { resolve(value); }); }
+    return new (P || (P = Promise))(function (resolve, reject) {
+        function fulfilled(value) { try { step(generator.next(value)); } catch (e) { reject(e); } }
+        function rejected(value) { try { step(generator["throw"](value)); } catch (e) { reject(e); } }
+        function step(result) { result.done ? resolve(result.value) : adopt(result.value).then(fulfilled, rejected); }
+        step((generator = generator.apply(thisArg, _arguments || [])).next());
+    });
+};
 var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
@@ -42573,55 +42582,58 @@ Object.defineProperty(exports, "__esModule", ({ value: true }));
 const core_1 = __importDefault(__nccwpck_require__(2186));
 const github_1 = __importDefault(__nccwpck_require__(5438));
 const octokit_1 = __nccwpck_require__(7467);
-async function run() {
-    try {
-        const inputs = {
-            token: core_1.default.getInput("repo-token", { required: true }),
-            titleText: core_1.default.getInput("title-text", { required: true }),
-            placement: core_1.default.getInput("placement", { required: true }).toLowerCase(),
-        };
-        if (inputs.placement != "prefix" && inputs.placement != "suffix") {
-            core_1.default.warning("invalid placement, must be either 'prefix' or 'suffix'");
-            core_1.default.setFailed("invalid placement value");
+function run() {
+    var _a;
+    return __awaiter(this, void 0, void 0, function* () {
+        try {
+            const inputs = {
+                token: core_1.default.getInput("repo-token", { required: true }),
+                titleText: core_1.default.getInput("title-text", { required: true }),
+                placement: core_1.default.getInput("placement", { required: true }).toLowerCase(),
+            };
+            if (inputs.placement != "prefix" && inputs.placement != "suffix") {
+                core_1.default.warning("invalid placement, must be either 'prefix' or 'suffix'");
+                core_1.default.setFailed("invalid placement value");
+            }
+            const placement = inputs.placement;
+            const pullRequest = github_1.default.context.payload.pull_request;
+            const title = (_a = pullRequest.title) !== null && _a !== void 0 ? _a : "";
+            const titleText = inputs.titleText;
+            const updateTitle = {
+                prefix: !title.toLowerCase().startsWith(titleText.toLowerCase()),
+                suffix: !title.toLowerCase().endsWith(titleText.toLowerCase()),
+            }[inputs.placement] || false;
+            core_1.default.setOutput("didUpdateTitle", updateTitle.toString());
+            let newTitle = title;
+            if (updateTitle) {
+                newTitle = {
+                    prefix: titleText.concat(title),
+                    suffix: title.concat(titleText),
+                }[placement];
+            }
+            else {
+                core_1.default.warning("No updates were made to PR title");
+            }
+            if (!updateTitle) {
+                return;
+            }
+            const octokit = new octokit_1.Octokit({ token: inputs.token });
+            const response = yield octokit.rest.pulls.update({
+                owner: github_1.default.context.repo.owner,
+                repo: github_1.default.context.repo.repo,
+                pull_number: pullRequest.number,
+                title: newTitle,
+            });
+            core_1.default.info(`Response: ${response.status}`);
+            if (response.status !== 200) {
+                core_1.default.error("Updating the pull request has failed");
+            }
         }
-        const placement = inputs.placement;
-        const pullRequest = github_1.default.context.payload.pull_request;
-        const title = pullRequest.title ?? "";
-        const titleText = inputs.titleText;
-        const updateTitle = {
-            prefix: !title.toLowerCase().startsWith(titleText.toLowerCase()),
-            suffix: !title.toLowerCase().endsWith(titleText.toLowerCase()),
-        }[inputs.placement] || false;
-        core_1.default.setOutput("didUpdateTitle", updateTitle.toString());
-        let newTitle = title;
-        if (updateTitle) {
-            newTitle = {
-                prefix: titleText.concat(title),
-                suffix: title.concat(titleText),
-            }[placement];
+        catch (error) {
+            core_1.default.error(error);
+            core_1.default.setFailed(error.message);
         }
-        else {
-            core_1.default.warning("No updates were made to PR title");
-        }
-        if (!updateTitle) {
-            return;
-        }
-        const octokit = new octokit_1.Octokit({ token: inputs.token });
-        const response = await octokit.rest.pulls.update({
-            owner: github_1.default.context.repo.owner,
-            repo: github_1.default.context.repo.repo,
-            pull_number: pullRequest.number,
-            title: newTitle,
-        });
-        core_1.default.info(`Response: ${response.status}`);
-        if (response.status !== 200) {
-            core_1.default.error("Updating the pull request has failed");
-        }
-    }
-    catch (error) {
-        core_1.default.error(error);
-        core_1.default.setFailed(error.message);
-    }
+    });
 }
 run();
 
