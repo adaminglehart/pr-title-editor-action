@@ -48,6 +48,18 @@ async function run() {
       return;
     }
 
+    if (!github.context.repo.repo) {
+      core.setFailed("missing repo name");
+    }
+
+    if (!github.context.repo.owner) {
+      core.setFailed("missing repo owner");
+    }
+
+    if (!pullRequest) {
+      core.setFailed("missing pull request");
+    }
+
     const octokit = new Octokit({ token: inputs.token });
 
     const response = await octokit.rest.pulls.update({

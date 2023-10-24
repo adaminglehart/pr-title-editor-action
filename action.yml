@@ -4,10 +4,10 @@ author: "adaminglehart"
 
 # Define your inputs here.
 inputs:
-  token:
+  repo-token:
     description: "Your github token"
     required: true
-  titleText:
+  title-text:
     description: "the text to add to your PR titles"
     required: true
   placement:
