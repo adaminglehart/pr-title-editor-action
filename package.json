@@ -4,7 +4,8 @@
   "description": "Automatically prepend or append text to PR titles",
   "main": "dist/index.js",
   "scripts": {
-    "package": "ncc build src/index.ts --license licenses.txt"
+    "package": "ncc build src/index.ts --license licenses.txt",
+    "build": "rm -rf dist && yarn tsc"
   },
   "repository": {
     "type": "git",
