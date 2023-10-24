@@ -2,9 +2,9 @@
   "name": "pr-title-editor-action",
   "version": "1.0.0",
   "description": "Automatically prepend or append text to PR titles",
-  "main": "index.ts",
+  "main": "dist/index.js",
   "scripts": {
-    "build": "rm -rf ./dist && yarn tsc"
+    "package": "ncc build src/index.ts --license licenses.txt"
   },
   "repository": {
     "type": "git",
@@ -24,7 +24,8 @@
     "typescript": "^5.1.0"
   },
   "devDependencies": {
-    "@types/node": "^14.14.25"
+    "@types/node": "^14.14.25",
+    "@vercel/ncc": "^0.38.1"
   },
   "engines": {
     "node": ">=18.0.0"
